@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+        <style>
+            #internship_filter_group {
+                display: none;
+            }
+            #student_type_filter_group {
+                display: none;
+            }
+            iframe {
+                width: 100%;
+                height: 67vh;
+            }
+            #list-container {
+                position: relative;
+            }
+            #list-container .to-top {
+                position: fixed;
+                bottom: 1em;
+                right: 5%;
+            }
+            #list:after {
+                content: "";
+                height: 30vh;
+                display: block;
+            }
+            @media (min-width: 800px) {
+                .flex-container {
+                    display: flex;
+                    flex-wrap: wrap;
+
+                    /*max-width: 97vw;*/
+                }
+                #list {
+                    overflow: scroll;
+                    height: 100%;
+                    /*width: 49%;
+                    min-width:320px;*/
+                }
+
+                #list-container {
+                    overflow: hidden;
+                }
+                iframe, #list-container {
+                    height: 67vh;
+                    flex: 1 1 300px;
+                }
+                #list-container .to-top {
+                    position: absolute;
+                    bottom: 1em;
+                    right: 5%;
+                }
+
+            }
+
+            .indented {
+                margin-left: 0.5vw;
+            }
+            .details {
+                display: none;
+            }
+
+
+
+
+
+
+            h1 {
+                text-align: center;
+            }
+            div.main {
+                display: inline-block;
+                vertical-align: top;
+            }
+            #title {
+                display: block;
+            }
+            #filters {
+                width: 99%;
+            }
+
+            p {
+                font-family: sans-serif;
+            }
+            .organizationCard {
+                border: 5px solid #eaeaea;
+                margin: 0.5vh;
+                padding: 1vh;
+            }
+            #tabs {
+                padding: 0;
+                margin: 0 1.5vh;
+            }
+            .tab {
+                padding: 1vh;
+            }
+            .details {
+                display: none;
+            }
+            #zip-filter {
+                margin: 0vw 0vw 0vw 5vw;
+            }
+            .color-dot {
+                border-radius: 0.4em;
+                width: 0.8em;
+                height: 0.8em;
+                display: inline-block;
+                margin: 0em 0.5em 0em 0.5em;
+            }
+            .label-hospitals {
+                background-color: orange;
+            }
+            .label-clinics {
+                background-color: blue;
+            }
+            .label-schools {
+                background-color: green;
+            }
+            .label-faith-based {
+                background-color: brown;
+            }
+            .label-government {
+                background-color: yellow;
+            }
+            #tabs {
+                display: flex;
+                background-color: #ccc;
+
+            }
+            .tab {
+                background-color: inherit;
+                border-width: 3px;
+                border-color: #ccc;
+                border-style: hidden;
+                height: 1em;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+            .selected {
+                overflow: visible;
+                background-color: #fff;
+                border-style: solid hidden hidden hidden;
+            }
+            .to-top {
+                padding: 0.3rem !important;
+                font-size: 1rem !important;
+            }
+
+            .unconfirmed {
+                color: #aaa;
+            }
+
+        </style>
+        <script type="text/javascript">//THIS SCRIPT IS FOR BUILDING THE LIST
+            /*
+         * Called on each row in MakeList
+        */
+            var openDetail = function (index) {
+                //var display = document.getElementById('detail' + index).style.display;
+                if (document.getElementById('detail' + index).style.display !== 'block') {
+                    document.getElementById('detail' + index).style.display = "block";
+                } else {
+                    document.getElementById('detail' + index).style.display = "none";
+                }
+            }
+
+            function HtmlList(schools_data, addresses) {
+                this.schools_data = schools_data;
+                this.addresses = addresses;
+                /*this.makeRowHtml = function(row) {
+                'use strict';
+                var str = "";
+                str += "<div id='organizationCard'>";
+                str += "<a href='organization-details.html'> <h3>" + row["Site Name"] + "</h3> </a>";
+                if (row["Participation/Eligibility"]) {
+                    str += "<p>Internship program: " + row["Participation/Eligibility"] + "</p>";
+                }
+                if (row["\nStudent Type:\nHigh school? College? Both?"]) {
+                    str += "<p>Student type: " + row["\nStudent Type:\nHigh school? College? Both?"] + "</p>";
+                }
+                str += "</div>";
+                return str;
+            }*/
+                /*this.makeRowHtml = function(row, index) {
+                'use strict';
+                var str = "", color = "", color_dot = "";
+
+		color_dot = "<div style=\"background-color: " + colorFromType(row["Pin Color/Designation"]) +"; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;\"></div>";
+
+
+                str += "<div class='organizationCard paragraph'" + "onclick = \"(function() {if (document.getElementById(\'detail" + index + "\').style.display !== 'block') document.getElementById(\'detail" + index + "\').style.display = 'block'; else document.getElementById(\'detail" + index + "\').style.display = 'none'; })()\"" + ">";
+                str += "<h3>" + color_dot + row["Site Name"] + "</h3>";
+                str += "<div class=\"details\" id=\"detail" + index + "\">";
+                if (row["Contact Info"]) {
+                    str += "<p>Contact Information: </p> <div class='indented'>" + htmlWithBreaks(urlsToLinks(row["Contact Info"])) + "</div>";
+                }
+                if (row["Description"]) {
+                    str += "<p>Description: </p> " + htmlWithUl(row["Description"]);
+                }
+                str += "</div>";
+                str += "</div>";
+
+                return str;
+            }*/
+                this.makeRowHtml = function(row, index) {
+                    'use strict';
+                    var str = "", color = "", color_dot = "";
+                    color_dot = "<div style=\"background-color: " + colorFromType(row["Pin Color/Designation"]) +"; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;\"></div>";
+                    str += "<div class='organizationCard paragraph";
+                    if (yesNoFromString(row["Participation/Eligibility"]) !== "yes")
+                        str += " unconfirmed";
+                    str += "'";
+                    if (index === 0) {
+                        str += " id = 'top'";
+                    }
+                    str += " onclick='(openDetail(" + index + "))' >";
+                    str += "<h3>" + color_dot + row["Site Name"] + "</h3>";
+                    str += "<div class=\"details\" id=\"detail" + index + "\">";
+                    if (row["Contact Info"]) {
+                        str += "<p>Contact Information: </p> <div class='indented'>" + htmlWithBreaks(urlsToLinks(row["Contact Info"])) + "</div>";
+                    }
+                    if (row["Description"]) {
+                        str += "<p>Description: </p> " + htmlWithUl(row["Description"]);
+                    }
+                    str += "</div>";
+                    str += "</div>";
+
+                    return str;
+                }
+
+                var colorFromType = function (org) {
+                    'use strict';
+                    switch (org.toLowerCase()) {
+                        case "hospital":
+                            return "orange";
+                        case "clinic":
+                            return "blue";
+                        case "school":
+                            return "green";
+                        case "faith-based":
+                            return "brown";
+                        case "government":
+                            return "yellow";
+                    }
+                    return "white";
+                }
+                /*var htmlWithUl = function(str) {
+                    var i, out="<ul><li>";
+                    for (i = 0; i < str.length; i++) {
+                        if (str.charCodeAt(i) === 10) out += "</li> <li>";
+                        else if (str.charCodeAt(i) !== 45) out+=str.substring(i, i+1);
+                    }
+                    out += "</li></ul>"
+                    return out;
+                }*/
+                var htmlWithUl = function(str) {
+                    var i, out="<ul>", j, is_bullet = false;
+                    for (i = 0; i < str.length; i++) {
+                        if (str.charCodeAt(i) === 45 && !is_bullet)
+                        {
+                            j = i - 1;
+                            while (true)
+                            {
+                                if (str.charCodeAt(j) === 10 || j <= 0)
+                                {
+                                    is_bullet = true;
+                                    break;
+                                }
+                                if (str.charCodeAt(j) > 32)
+                                {
+                                    is_bullet = false;
+                                    break;
+                                }
+                                j -= 1;
+                            }
+                            if (is_bullet)
+                            {
+                                out += "<li>";
+                            }
+                                
+                        }
+                        else if (str.charCodeAt(i) === 10 && is_bullet)
+                        {
+                            out += "</li>";
+                            is_bullet = false;
+                        }
+                        else
+                        {
+                            if (str.charCodeAt(i) === 10) out += "<br>";
+                            out += str.substring(i, i + 1);
+                        }
+                        
+                        
+                        if (((str.length - 1) === i) && is_bullet)
+                        {
+                            out += "</li>";
+                            is_bullet = false;
+                        }
+                        
+                        
+                    }
+                    out += "</ul>"
+                    return out;
+                }
+                var htmlWithBreaks = function(str) {
+                    var i, out="";
+                    for (i = 0; i < str.length; i++) {
+                        if (str.charCodeAt(i) === 10) out += "<br>";
+                        else out+=str.substring(i, i+1);
+                    }
+                    return out;
+                }
+                var getUrlFromString = function(str) {
+                    'use strict';
+                    var start, end;
+                    start = str.indexOf("http");
+                    if (start === -1) {
+                        start = str.indexOf("www");
+                    }
+                    if (start === -1) {
+                        return "";
+                    }
+                    for (end = start; end <= str.length; end += 1) {
+                        if (end < str.length && (str.charCodeAt(end) < 33 || str.charCodeAt(end) > 126) ) {
+                            break;
+                        }
+                    }
+                    return str.substring(start, end);
+                }
+                var urlsToLinks = function(str) {
+                    'use strict';
+                    var start, end, url;
+                    start = str.indexOf("http");
+                    if (start === -1) {
+                        start = str.indexOf("www");
+                    }
+                    if (start === -1)
+                    {
+                        start = str.indexOf("https");
+                    }
+                    if (start === -1) {
+                        return "";
+                    }
+                    for (end = start; end <= str.length; end += 1) {
+                        if (end < str.length && (str.charCodeAt(end) < 33 || str.charCodeAt(end) > 126) ) {
+                            break;
+                        }
+                    }
+                    url = str.substring(start, end);
+                    return str.substring(0, start) + "<a href = '" + url + "' >" + url + "</a>" + str.substring(end);
+                }
+
+
+
+                this.makeList = function() {
+                    'use strict';
+                    var str = "", i, j;
+                    for (i = 0; i < addresses.length; i += 1) {
+                        /*for (j = 0; j < schools_data[addresses[i].school].length; j += 1) {
+                        str += makeRowHtml(schools_data[addresses[i].school][j]);
+                    }*/
+                        str += this.makeRowHtml(schools_data[addresses[i].school][addresses[i].index], i);
+                    }
+                    //console.log(str);
+                    return str;
+                }
+
+            }
+
+        </script><!--This script is for building the list. DONE-->
+        <script type="text/javascript">
+            /*global $, jQuery*/
+            /*global var, SCHOOLS_LIST*/
+            /*global var, address_list*/
+            function correctSchool(school_index) {
+                'use strict';
+                return document.getElementById(SCHOOLS_LIST[school_index].toLowerCase() + "-filter").checked;
+            }
+
+            function correctZip(address, schools_data) {
+                'use strict';
+                var i, cell, zip = document.getElementById("zip-filter").value;
+                if (zip.length !== 5) {
+                    if (zip.length > 0) {
+                        document.getElementById("zip-filter").value = "incorrect zip code";
+                    }
+                    return true;
+                }
+                cell = schools_data[address.school][address.index]["Contact Info"];
+                for (i = 0; i < cell.length - 5; i += 1) {
+
+                    if (cell.substring(i, i + 5) === zip) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            /*
+            function correctEligibility(address, schools_data) {
+                'use strict';
+                var i, cell, yes = document.getElementById("internship-yes-filter").checked, no = document.getElementById("internship-no-filter").checked, no_but = document.getElementById("internship-no-but-filter").checked, other = document.getElementById("internship-other-filter").checked;
+
+                cell = schools_data[address.school][address.index]["Participation/Eligibility"];
+                switch (yesNoFromString(cell)) {
+                    case "yes":
+                        return yes;
+                    case "no":
+                        return no;
+                    case "no, but":
+                        return no_but;
+                    case "other":
+                        return other;
+                }
+            }
+*/
+            function correctEligibility(address, schools_data)
+            {
+                if (!document.getElementById("confirmed-filter").checked)
+                    return true;
+                cell = schools_data[address.school][address.index]["Participation/Eligibility"];
+                return yesNoFromString(cell) === "yes";
+            }
+
+            function correctCategory(address, schools_data) {
+                'use strict';
+                var selected, selectedId, cell, i;
+                selected = document.getElementsByClassName("selected");
+                for (i = 0; i < selected.length; i += 1) {
+                    if (selected[i].classList.contains("tab")) {
+                        selectedId = selected[i].id;
+                        break;
+                    }
+                }
+                if (selectedId.length === 0) {
+                    selectedId.push("all");
+                }
+                if (selectedId.includes("all")) {
+                    return true;
+                }
+                cell = schools_data[address.school][address.index]["Pin Color/Designation"];
+                var a = selectedId.toLowerCase();
+                var b = (cell.substring(0, cell.length)).toLowerCase();
+                return a.includes(b);
+            }
+
+
+
+            function yesNoFromString(str) {
+                'use strict';
+                str = " " + str + " ";
+                if (str.search(/ yes/i) !== -1) return "yes";
+                if (str.search(/ no/i) !== -1) {
+                    if (str.search(/ but/i) !== -1) return "no, but";
+                    return "no";
+                }
+                return "other";
+            }
+
+            function update() {
+                "use strict";
+
+                var i, j, temp, addresses = [], schools_data = [], school_index, list;
+                for (i = 0; i < SCHOOLS_LIST.length; i += 1) {
+                    schools_data.push(JSON.parse(localStorage.getItem(SCHOOLS_LIST[i])));
+                }
+
+                for (i = 0; i < address_list.length; i += 1) {
+                    school_index = address_list[i].school;
+                    if (correctSchool(school_index) && correctZip(address_list[i], schools_data) && correctEligibility(address_list[i], schools_data) && correctCategory(address_list[i], schools_data)) { //Check if the box corresponding with the school is checked
+                        addresses.push(address_list[i]);
+                    }
+                }
+
+                //Bubble sort I think
+                for (i = 0; i < addresses.length; i += 1) {
+                    for (j = 0; j < addresses.length - 1 - i; j += 1) {
+                        if (addresses[j].relevance > addresses[j + 1].relevance) {
+                            temp = addresses[j];
+                            addresses[j] = addresses[j + 1];
+                            addresses[j + 1] = temp;
+                        }
+                    }
+                }
+                list = new HtmlList(schools_data, addresses);
+                document.getElementById("list").innerHTML = list.makeList();
+            }
+
+            $(document).ready(function () {
+                "use strict";
+                $(".filter, :checkbox").on("click", update);
+                $(document).keypress(function (event) {
+                    if (event.which === 13 || (event.target.id === "zip-filter" && event.target.value.length === 5)) {
+                        update();
+                    }
+
+                });
+            });
+        </script><!--This script is for updating and filtering.-->
+        <script type="text/javascript">
+            /* function School(name, arr) {
+            this.name = name;
+            this.data = arr;
+            this.
+        }*/
+        </script><!--This script is for the School type thing-->
+        <script type="text/javascript">
+            /*global $, jQuery*/
+            /*global var, SCHOOLS_LIST*/
+            var address_list;
+
+            function setAddressesAll() {                                    //TERRIBLY INEFFICIENT PLEASE FIX BEFORE FINAL RELEASE
+                "use strict";
+                var i, j, current = [], addresses = [];
+                for (i = 0; i < SCHOOLS_LIST.length; i += 1) {
+                    current = JSON.parse(localStorage.getItem(SCHOOLS_LIST[i]));
+
+                    for (j = 0; j < current.length; j += 1) {
+                        addresses.push({
+                            school: i,
+                            index: j,
+                            relevance: 1
+                        });
+                    }
+                }
+                address_list = addresses;
+            }
+
+            function keywordSearch() {
+                "use strict";
+                var i, j, attribute, k, relevance, current = [], addresses = [], keyword;
+                keyword = document.getElementById("keyword_search").value;
+                for (i = 0; i < SCHOOLS_LIST.length; i += 1) {
+                    current = JSON.parse(localStorage.getItem(SCHOOLS_LIST[i]));
+                    for (j = 0; j < current.length; j += 1) {
+                        relevance = 0;
+
+                        for (attribute in current[j]) {
+                            if (current[j].hasOwnProperty(attribute)) {
+                                for (k = 0; k < current[i][attribute].length - keyword.length; k += 1) {
+                                    if (current[j][attribute].substring(k, k + keyword.length) === keyword) {
+                                        relevance += 1;
+                                    }
+                                }
+                                //relevance += (current[j][attribute].match(/is/g) || []).length;
+                            }
+                        }
+                        if (relevance > 0) {
+                            addresses.push({
+                                school: i,
+                                index: j,
+                                relevance: relevance
+                            });
+                        }
+
+                    }
+                }
+                address_list = addresses;
+                update();
+            }
+        </script><!--This is the search related script. It builds the addresslist-->
+        <script type="text/javascript">
+            function tabSetup() {
+                var i, tabs, selfLinks;
+                tabs = document.getElementsByClassName("tab");
+                for (i = 0; i < tabs.length; i += 1) {
+                    tabs[i].onclick = select;
+                }
+            }
+            function toTopSetup() {
+                var link = document.getElementsByClassName("to-top")[0], scroll = document.getElementById("list");
+                if (window.getComputedStyle(scroll).overflow === "scroll") {
+                    link.onclick = function () {
+                        scroll.scrollTop = 0;
+                        return false;
+                    };
+                }
+            }
+            function select() {
+                clearSelect();
+                this.classList.add("selected");
+                update();
+            }
+            function clearSelect() {
+                var i, tabs;
+                tabs = document.getElementsByClassName("tab");
+                for (i = 0; i < tabs.length; i += 1) {
+                    tabs[i].classList.remove("selected");
+                }
+            }
+            window.onload = tabSetup;
+        </script><!--This is just simple navigation (specifically, the tabs above the list)-->
+        <script type="text/javascript"> //THIS IS THE MAIN SCRIPT (that gets all the information using Tabletop and sets things in motion, you see)
+            const SCHOOLS_LIST = ["CAMS", /*"Jordan",*/ "Lakewood", "McBride", "Poly"];
+            //var publicSpreadSheetUrl = 'https://docs.google.com/spreadsheets/d/1zYOguWMR28cfWa1JMmnXWWKy6TVkPuTaOTv9ho8rY7k/edit?usp=sharing';	//This is the old copy
+            var publicSpreadSheetUrl = 'https://docs.google.com/spreadsheets/d/1nDk-3pqoJfGT_sdpBmAXWedU0neXZqtZH8dL3J4FVXU/edit?usp=sharing'; 	//This is the original that is still living and changing
+            function init() {
+                Tabletop.init( {        //Singleton? //Authkey? //Parameterize?
+                    key: publicSpreadSheetUrl,
+                    callback: recordInfo,
+                    debug: false } )
+            }
+            function recordInfo(data, tabletop) {
+                //console.log(data);
+                storeSchool(tabletop, "CAMS");
+                //storeSchool(tabletop, "Jordan");
+                storeSchool(tabletop, "Lakewood"); //The issue here is that in the original doc it got named with a space in it :(
+                storeSchool(tabletop, "McBride");
+                storeSchool(tabletop, "Poly");
+                setAddressesAll();
+                update();
+
+
+                toTopSetup();
+            }
+
+            function storeSchool(tabletop, school_name) {
+                localStorage.setItem(school_name, JSON.stringify(tabletop.sheets(school_name).all()));
+            }
+
+
+
+            window.addEventListener('DOMContentLoaded', init);
+        </script>
+
+        <!--TODO 
+1. Put the school processing and accessing methods actually in the School objects, okay? Ah. There are no school objects. But I can make them?
+2. 
+-->
+
+    </head>
+
+
+
+
+
+
+    <body>
+        <div class="wsite-form-input-container wsite-form-left wsite-form-input-first-name">
+            <input id="keyword_search" class="wsite-form-input wsite-input" type="text" placeholder="Keyword"/>
+            <label class="wsite-form-sublabel" for="keyword_search">Keyword</label>
+            <button class="wsite-button wsite-button-small wsite-button-normal" id="search-button" onclick="keywordSearch()">
+                <span class="wsite-button-inner">Search</span>
+            </button>
+        </div>
+
+
+
+        <div id="filters" class="main">
+            <div class="paragraph"><font color="#000"><strong>School</strong></font></div>
+            <!--If these ID's get changed, the world will explode. Don't do it.-->
+
+            <div class="paragraph"><font color="#2a2a2a">
+                <div class="wsite-form-radio-container">
+
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input type='checkbox' id='cams-filter' checked='checked' /><label for='cams-filter'>CAMS</label></span>
+<!--
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input type='checkbox' id='jordan-filter' /><label for='jordan-filter'>Jordan</label></span>
+-->
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input type='checkbox' id='lakewood-filter' checked='checked' /><label for='lakewood-filter'>Lakewood</label></span>
+
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input type='checkbox' id='mcbride-filter' checked='checked' /><label for='mcbride-filter'>McBride</label></span>
+
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input type='checkbox' id='poly-filter' checked='checked' /><label for='poly-filter'>Poly</label></span>
+
+
+                </div>
+
+                </font></div>
+
+            <div class="paragraph"><font color="#000"><strong>ZIP code</strong></font></div>
+
+            <div class="wsite-form-input-container" >
+                <input id="zip-filter" class="wsite-form-input wsite-input" placeholder="Five Digit ZIP" style="margin-left: 0"/>
+                <!--<label class="wsite-form-sublabel" for="zip-filter">Five digit ZIP</label>-->
+            </div><br>
+            
+            <div class="wsite-form-radio-container" id="confirmed_group">
+
+                <div class="paragraph"><font color="#2a2a2a">
+
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input type='checkbox' id='confirmed-filter' checked="checked"/><label for='confirmed-filter'>Show only sites with a confirmed program with LBUSD</label></span>
+
+                    </font></div>
+            </div>
+            <br>
+            
+<!--
+            <div class="wsite-form-radio-container" id="internship_filter_group">
+
+                <div class="paragraph"><font color="#000"><strong>Is there an internship?</strong></font></div>
+
+                <div class="paragraph"><font color="#2a2a2a">
+
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input type='checkbox' id='internship-yes-filter' checked="checked"/><label for='internship-yes-filter'>Yes</label></span>
+
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input type='checkbox' id='internship-no-filter' checked="checked"/><label for='internship-no-filter'>No</label></span>
+
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input type='checkbox' id='internship-no-but-filter' checked="checked"/><label for='internship-no-but-filter'>No, but</label></span>
+
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input type='checkbox' id='internship-other-filter' checked="checked"/><label for='internship-other-filter'>Other</label></span>
+
+                    </font></div>
+
+
+            </div>
+-->
+            
+            <div class="wsite-form-radio-container" id="student_type_filter_group">
+                <div class="paragraph"><font color="#000"><strong>Student type</strong></font></div>
+            </div>
+
+        </div>
+        <div class="flex-container">
+            <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1wd-1XGsxVSbgdbNC_C767ub67LIjCeU1"></iframe>
+
+            <div id="list-container">
+                <div id="tabs"><div class="tab selected" id="tab_all">All</div><div class="tab" id="tab_hospitals"><div class="color-dot label-hospitals"></div>Hospitals</div><div class="tab" id="tab_clinics"><div class="color-dot label-clinics"></div>Clinics</div><div class="tab" id="tab_schools"><div class="color-dot label-schools"></div>Schools</div><div class="tab" id="tab_faith-based"><div class="color-dot label-faith-based"></div>Faith-Based</div><div class="tab" id="tab_government"><div class="color-dot label-government"></div>Government</div></div>
+
+                <a class="to-top wsite-button wsite-button-small wsite-button-normal" href="#top" class="wsite-button-inner">
+                    <span class="wsite-button-inner">To Top</span>
+                </a>
+
+                
+
+
+
+                <div id="list">
+<div class='organizationCard paragraph' id = 'top' onclick='(openDetail(0))' ><h3><div style="background-color: white; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;"></div>Casa Youth Shelter</h3><div class="details" id="detail0"><p>Contact Information: </p> <div class='indented'>10911 Reagan Street, <br>Los Alamitos, CA 90720<br>(562) 594-6825<br><a href = 'http://www.casayouthshelter.org/' >http://www.casayouthshelter.org/</a></div><p>Description: </p> <ul>Youth Leadership Program To apply for membership, please email YLP@casayouthshelter.org. Please provide the following information:<br>
+<br>
+Full name<br>
+Name of your high school<br>
+Your grade level<br>
+Your telephone number<br>
+For more information, please contact Pamela Sepulveda, Community Outreach Director at (562) 5946825 or (714) 9958601 or via email at pamelasepulveda@casayouthshelter.org.</ul></div></div><div class='organizationCard paragraph' onclick='(openDetail(1))' ><h3><div style="background-color: orange; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;"></div>Children's Clinic Family Health</h3><div class="details" id="detail1"><p>Contact Information: </p> <div class='indented'>455 E Columbia St # 201, <br>Long Beach, CA 90806<br>(562) 933-0400<br><a href = 'http://www.thechildrensclinic.org/' >http://www.thechildrensclinic.org/</a></div><p>Description: </p> <ul><li> Application given once spoken to over phone</li><li> Internship duration depends on department (health education outreach, nurse practitioner, social worker qualities, high school health education)</li><li> Duration varies from a month to a year</li><li> You can apply anytime</li></ul></div></div><div class='organizationCard paragraph' onclick='(openDetail(2))' ><h3><div style="background-color: orange; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;"></div>
+St. Mary's Medical Center Long Beach</h3><div class="details" id="detail2"><p>Contact Information: </p> <div class='indented'>1050 Linden Ave, <br>Long Beach, CA 90813<br>(562) 491-9000<br><a href = 'http://www.dignityhealth.org/stmarymedical/' >http://www.dignityhealth.org/stmarymedical/</a></div><p>Description: </p> <ul>The St. Mary's Medical Center is eager to have LB Poly high school students volunteer this upcoming year at their facility! <br>
+<br>
+In order to be eligible for the program... <br>
+<br>
+1. You must be 18 years old by January 1, 2019 to apply for the First Group of Poly St. Mary Medical Center MEDS/Business volunteers.<br>
+2. It is helpful to be interested in healthcare/medicine, public health, health education, business, policy, and Communications Careers overall caring. However, if you play a musical instrument, and care about a healthy environment; St. Mary's also enrolls musicians to play music on various floors of the medical center.<br>
+<br>
+To be eligible for the first round of volunteer opportunities:<br>
+a) you must be 18 by January 1, 2019<br>
+<br>
+</ul></div></div><div class='organizationCard paragraph' onclick='(openDetail(3))' ><h3><div style="background-color: orange; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;"></div>Long Beach Quest Dialysis Center</h3><div class="details" id="detail3"><p>Contact Information: </p> <div class='indented'>3140 Long Beach Blvd,<br>Long Beach, CA 90807<br>(562) 988-8866<br><a href = 'http://www.questdialysis.com/' >http://www.questdialysis.com/</a></div><p>Description: </p> <ul><li> Ongoing, flexible internship schedule</li><li> No requirements</li><li> Primarily clerical duties however willing to teach students and provide shadowing for clinical experience</li></ul></div></div><div class='organizationCard paragraph' onclick='(openDetail(4))' ><h3><div style="background-color: blue; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;"></div>Downtown Associated Youth Services (DAYS) Long Beach</h3><div class="details" id="detail4"><p>Contact Information: </p> <div class='indented'>1230 E Wardlow Rd.<br>Long Beach, CA 90807<br>(562) 507-1794<br><a href = 'http://www.dayslb.org' >http://www.dayslb.org</a></div><p>Description: </p> <ul><li> Volunteer program in Development Services available on website</li></ul></div></div><div class='organizationCard paragraph' onclick='(openDetail(5))' ><h3><div style="background-color: blue; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;"></div>Voicewaves</h3><div class="details" id="detail5"><p>Contact Information: </p> <div class='indented'>525 E. 7th St. #208<br>Long Beach, CA 90813<br><a href = 'http://voicewaves.org' >http://voicewaves.org</a></div><p>Description: </p> <ul><li> Check website for rising opportunities.</li></ul></div></div><div class='organizationCard paragraph' onclick='(openDetail(6))' ><h3><div style="background-color: blue; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;"></div>Frog Environmental
+*environmental health asset</h3><div class="details" id="detail6"><p>Contact Information: </p> <div class='indented'>800 E Ocean Blvd #105, <br>Long Beach, CA 90802<br> (877) 376-4368<br><a href = 'www.frogenv.com' >www.frogenv.com</a></div></div></div><div class='organizationCard paragraph' onclick='(openDetail(7))' ><h3><div style="background-color: blue; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;"></div>Ability First</h3><div class="details" id="detail7"><p>Contact Information: </p> <div class='indented'>3770 E Willow St, <br>Long Beach, CA 90815<br>(562) 426-6161<br><a href = 'www.abilityfirst.org' >www.abilityfirst.org</a></div></div></div><div class='organizationCard paragraph' onclick='(openDetail(8))' ><h3><div style="background-color: blue; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;"></div>Building Healthy 
+Communities</h3><div class="details" id="detail8"><p>Contact Information: </p> <div class='indented'>920 Atlantic Ave., Suite 102<br>Long Beach, CA 90813<br>(562) 436-4800<br><a href = 'www.bhclongbeach.org' >www.bhclongbeach.org</a></div><p>Description: </p> <ul><li> available year round</li><li> helps the hub team with </li>direct outreach, office support, or communications<br>
+ efforts</ul></div></div><div class='organizationCard paragraph' onclick='(openDetail(9))' ><h3><div style="background-color: green; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;"></div>Intellectual Virtues Academy</h3><div class="details" id="detail9"><p>Contact Information: </p> <div class='indented'>3601 Linden Ave, <br>Long Beach, CA 90807<br>(562) 912-7017<br><a href = 'www.ivalongbeach.org' >www.ivalongbeach.org</a><br>diana.bosetti@ivalongbeach.org</div></div></div><div class='organizationCard paragraph' onclick='(openDetail(10))' ><h3><div style="background-color: white; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;"></div>Educated Men with Meaningful Messages (St. Mary Medical Center)</h3><div class="details" id="detail10"><p>Contact Information: </p> <div class='indented'></div></div></div><div class='organizationCard paragraph' onclick='(openDetail(11))' ><h3><div style="background-color: white; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;"></div>Long Beach Immigrant Rights Coalition</h3><div class="details" id="detail11"><p>Contact Information: </p> <div class='indented'></div></div></div> complete-list.html:369:21
+
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
