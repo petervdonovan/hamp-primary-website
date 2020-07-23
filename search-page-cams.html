@@ -1,199 +1,257 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-        <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
-        <style>
-            #internship_filter_group {
-                display: none;
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+    <style>
+        #internship_filter_group {
+            display: none;
+        }
+
+        #student_type_filter_group {
+            display: none;
+        }
+
+        iframe {
+            width: 100%;
+            height: 67vh;
+        }
+
+        #list-container {
+            position: relative;
+        }
+
+        #list-container .to-top {
+            position: fixed;
+            bottom: 1em;
+            right: 5%;
+        }
+
+        #list:after {
+            content: "";
+            height: 30vh;
+            display: block;
+        }
+
+        @media (min-width: 800px) {
+            .flex-container {
+                display: flex;
+                flex-wrap: wrap;
+
+                /*max-width: 97vw;*/
             }
-            #student_type_filter_group {
-                display: none;
+
+            #list {
+                overflow: scroll;
+                height: 100%;
+                /*width: 49%;
+                    min-width:320px;*/
             }
-            iframe {
-                width: 100%;
-                height: 67vh;
-            }
+
             #list-container {
-                position: relative;
+                overflow: hidden;
             }
+
+            iframe,
+            #list-container {
+                height: 67vh;
+                flex: 1 1 300px;
+            }
+
             #list-container .to-top {
-                position: fixed;
+                position: absolute;
                 bottom: 1em;
                 right: 5%;
             }
-            #list:after {
-                content: "";
-                height: 30vh;
-                display: block;
-            }
-            @media (min-width: 800px) {
-                .flex-container {
-                    display: flex;
-                    flex-wrap: wrap;
 
-                    /*max-width: 97vw;*/
-                }
-                #list {
-                    overflow: scroll;
-                    height: 100%;
-                    /*width: 49%;
-                    min-width:320px;*/
-                }
+        }
 
-                #list-container {
-                    overflow: hidden;
-                }
-                iframe, #list-container {
-                    height: 67vh;
-                    flex: 1 1 300px;
-                }
-                #list-container .to-top {
-                    position: absolute;
-                    bottom: 1em;
-                    right: 5%;
-                }
+        .indented {
+            margin-left: 0.5vw;
+        }
 
-            }
-
-            .indented {
-                margin-left: 0.5vw;
-            }
-            .details {
-                display: none;
-            }
+        .details {
+            display: none;
+        }
 
 
 
 
 
 
-            h1 {
-                text-align: center;
-            }
-            div.main {
-                display: inline-block;
-                vertical-align: top;
-            }
-            #title {
-                display: block;
-            }
-            #filters {
-                width: 99%;
-            }
+        h1 {
+            text-align: center;
+        }
 
-            p {
-                font-family: sans-serif;
-            }
-            .organizationCard {
-                border: 5px solid #eaeaea;
-                margin: 0.5vh;
-                padding: 1vh;
-            }
-            #tabs {
-                padding: 0;
-                margin: 0 1.5vh;
-            }
-            .tab {
-                padding: 1vh;
-            }
-            .details {
-                display: none;
-            }
-            #zip-filter {
-                margin: 0vw 0vw 0vw 5vw;
-            }
-            .color-dot {
-                border-radius: 0.4em;
-                width: 0.8em;
-                height: 0.8em;
-                display: inline-block;
-                margin: 0em 0.5em 0em 0.5em;
-            }
-            .label-hospitals {
-                background-color: orange;
-            }
-            .label-clinics {
-                background-color: blue;
-            }
-            .label-schools {
-                background-color: green;
-            }
-            .label-faith-based {
-                background-color: brown;
-            }
-            .label-government {
-                background-color: yellow;
-            }
-            #tabs {
-                display: flex;
-                background-color: #ccc;
+        div.main {
+            display: inline-block;
+            vertical-align: top;
+        }
 
-            }
-            .tab {
-                background-color: inherit;
-                border-width: 3px;
-                border-color: #ccc;
-                border-style: hidden;
-                height: 1em;
-                overflow: hidden;
-                white-space: nowrap;
-            }
-            .selected {
-                overflow: visible;
-                background-color: #fff;
-                border-style: solid hidden hidden hidden;
-            }
-            .to-top {
-                padding: 0.3rem !important;
-                font-size: 1rem !important;
-            }
+        #title {
+            display: block;
+        }
 
-            .unconfirmed {
-                color: #aaa;
-            }
+        #filters {
+            width: 99%;
+        }
 
-        </style>
-        <script type="text/javascript">//THIS SCRIPT IS FOR BUILDING THE LIST
-            /*
-         * Called on each row in MakeList
-        */
-            var openDetail = function (index) {
-                //var display = document.getElementById('detail' + index).style.display;
-                if (document.getElementById('detail' + index).style.display !== 'block') {
-                    document.getElementById('detail' + index).style.display = "block";
-                } else {
-                    document.getElementById('detail' + index).style.display = "none";
-                }
-            }
+        p {
+            font-family: sans-serif;
+        }
 
-            function HtmlList(schools_data, addresses) {
-                this.schools_data = schools_data;
-                this.addresses = addresses;
-                /*this.makeRowHtml = function(row) {
-                'use strict';
-                var str = "";
-                str += "<div id='organizationCard'>";
-                str += "<a href='organization-details.html'> <h3>" + row["Site Name"] + "</h3> </a>";
-                if (row["Participation/Eligibility"]) {
-                    str += "<p>Internship program: " + row["Participation/Eligibility"] + "</p>";
-                }
-                if (row["\nStudent Type:\nHigh school? College? Both?"]) {
-                    str += "<p>Student type: " + row["\nStudent Type:\nHigh school? College? Both?"] + "</p>";
-                }
-                str += "</div>";
-                return str;
-            }*/
-                /*this.makeRowHtml = function(row, index) {
+        .organizationCard {
+            border: 5px solid #eaeaea;
+            margin: 0.5vh;
+            padding: 1vh;
+        }
+
+        #tabs {
+            padding: 0;
+            margin: 0 1.5vh;
+        }
+
+        .tab {
+            padding: 1vh;
+        }
+
+        .details {
+            display: none;
+        }
+
+        #zip-filter {
+            margin: 0vw 0vw 0vw 5vw;
+        }
+
+        .color-dot {
+            border-radius: 0.4em;
+            width: 0.8em;
+            height: 0.8em;
+            display: inline-block;
+            margin: 0em 0.5em 0em 0.5em;
+        }
+
+        .label-hospitals {
+            background-color: orange;
+        }
+
+        .label-clinics {
+            background-color: blue;
+        }
+
+        .label-schools {
+            background-color: green;
+        }
+
+        .label-faith-based {
+            background-color: brown;
+        }
+
+        .label-government {
+            background-color: yellow;
+        }
+
+        .label-law {
+            background-color: pink;
+        }
+
+        #tabs {
+            display: flex;
+            background-color: #ccc;
+
+        }
+
+        .tab {
+            background-color: inherit;
+            border-width: 3px;
+            border-color: #ccc;
+            border-style: hidden;
+            height: 1em;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .selected {
+            overflow: visible;
+            background-color: #fff;
+            border-style: solid hidden hidden hidden;
+        }
+
+        .to-top {
+            padding: 0.3rem !important;
+            font-size: 1rem !important;
+        }
+
+        .unconfirmed {
+            color: #aaa;
+        }
+    </style>
+    <script type="text/javascript">//THIS SCRIPT IS FOR BUILDING THE LIST
+        /*
+     * Called on each row in MakeList
+    */
+        var openDetail = function (index) {
+            //var display = document.getElementById('detail' + index).style.display;
+            if (document.getElementById('detail' + index).style.display !== 'block') {
+                document.getElementById('detail' + index).style.display = "block";
+            } else {
+                document.getElementById('detail' + index).style.display = "none";
+            }
+        }
+
+        function HtmlList(schools_data, addresses) {
+            this.schools_data = schools_data;
+            this.addresses = addresses;
+            /*this.makeRowHtml = function(row) {
+            'use strict';
+            var str = "";
+            str += "<div id='organizationCard'>";
+            str += "<a href='organization-details.html'> <h3>" + row["Site Name"] + "</h3> </a>";
+            if (row["Participation/Eligibility"]) {
+                str += "<p>Internship program: " + row["Participation/Eligibility"] + "</p>";
+            }
+            if (row["\nStudent Type:\nHigh school? College? Both?"]) {
+                str += "<p>Student type: " + row["\nStudent Type:\nHigh school? College? Both?"] + "</p>";
+            }
+            str += "</div>";
+            return str;
+        }*/
+            /*this.makeRowHtml = function(row, index) {
+            'use strict';
+            var str = "", color = "", color_dot = "";
+
+    color_dot = "<div style=\"background-color: " + colorFromType(row["Pin Color/Designation"]) +"; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;\"></div>";
+
+
+            str += "<div class='organizationCard paragraph'" + "onclick = \"(function() {if (document.getElementById(\'detail" + index + "\').style.display !== 'block') document.getElementById(\'detail" + index + "\').style.display = 'block'; else document.getElementById(\'detail" + index + "\').style.display = 'none'; })()\"" + ">";
+            str += "<h3>" + color_dot + row["Site Name"] + "</h3>";
+            str += "<div class=\"details\" id=\"detail" + index + "\">";
+            if (row["Contact Info"]) {
+                str += "<p>Contact Information: </p> <div class='indented'>" + htmlWithBreaks(urlsToLinks(row["Contact Info"])) + "</div>";
+            }
+            if (row["Description"]) {
+                str += "<p>Description: </p> " + htmlWithUl(row["Description"]);
+            }
+            str += "</div>";
+            str += "</div>";
+
+            return str;
+        }*/
+            this.makeRowHtml = function (row, index) {
                 'use strict';
                 var str = "", color = "", color_dot = "";
-
-		color_dot = "<div style=\"background-color: " + colorFromType(row["Pin Color/Designation"]) +"; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;\"></div>";
-
-
-                str += "<div class='organizationCard paragraph'" + "onclick = \"(function() {if (document.getElementById(\'detail" + index + "\').style.display !== 'block') document.getElementById(\'detail" + index + "\').style.display = 'block'; else document.getElementById(\'detail" + index + "\').style.display = 'none'; })()\"" + ">";
+                color_dot = "<div style=\"background-color: " + colorFromType(row["Pin Color/Designation"]) + "; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;\"></div>";
+                str += "<div class='organizationCard paragraph";
+                if (yesNoFromString(row["Participation/Eligibility"]) !== "yes")
+                    str += " unconfirmed";
+                str += "'";
+                if (index === 0) {
+                    str += " id = 'top'";
+                }
+                str += " onclick='(openDetail(" + index + "))' >";
                 str += "<h3>" + color_dot + row["Site Name"] + "</h3>";
                 str += "<div class=\"details\" id=\"detail" + index + "\">";
                 if (row["Contact Info"]) {
@@ -206,496 +264,486 @@
                 str += "</div>";
 
                 return str;
+            }
+
+            var colorFromType = function (org) {
+                'use strict';
+                switch (org.toLowerCase()) {
+                    case "hospital":
+                        return "orange";
+                    case "clinic":
+                        return "blue";
+                    case "school":
+                        return "green";
+                    case "faith-based":
+                        return "brown";
+                    case "government":
+                        return "yellow";
+                    case "law":
+                        return "pink";
+                }
+                return "white";
+            }
+            /*var htmlWithUl = function(str) {
+                var i, out="<ul><li>";
+                for (i = 0; i < str.length; i++) {
+                    if (str.charCodeAt(i) === 10) out += "</li> <li>";
+                    else if (str.charCodeAt(i) !== 45) out+=str.substring(i, i+1);
+                }
+                out += "</li></ul>"
+                return out;
             }*/
-                this.makeRowHtml = function(row, index) {
-                    'use strict';
-                    var str = "", color = "", color_dot = "";
-                    color_dot = "<div style=\"background-color: " + colorFromType(row["Pin Color/Designation"]) +"; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;\"></div>";
-                    str += "<div class='organizationCard paragraph";
-                    if (yesNoFromString(row["Participation/Eligibility"]) !== "yes")
-                        str += " unconfirmed";
-                    str += "'";
-                    if (index === 0) {
-                        str += " id = 'top'";
-                    }
-                    str += " onclick='(openDetail(" + index + "))' >";
-                    str += "<h3>" + color_dot + row["Site Name"] + "</h3>";
-                    str += "<div class=\"details\" id=\"detail" + index + "\">";
-                    if (row["Contact Info"]) {
-                        str += "<p>Contact Information: </p> <div class='indented'>" + htmlWithBreaks(urlsToLinks(row["Contact Info"])) + "</div>";
-                    }
-                    if (row["Description"]) {
-                        str += "<p>Description: </p> " + htmlWithUl(row["Description"]);
-                    }
-                    str += "</div>";
-                    str += "</div>";
-
-                    return str;
-                }
-
-                var colorFromType = function (org) {
-                    'use strict';
-                    switch (org.toLowerCase()) {
-                        case "hospital":
-                            return "orange";
-                        case "clinic":
-                            return "blue";
-                        case "school":
-                            return "green";
-                        case "faith-based":
-                            return "brown";
-                        case "government":
-                            return "yellow";
-                    }
-                    return "white";
-                }
-                /*var htmlWithUl = function(str) {
-                    var i, out="<ul><li>";
-                    for (i = 0; i < str.length; i++) {
-                        if (str.charCodeAt(i) === 10) out += "</li> <li>";
-                        else if (str.charCodeAt(i) !== 45) out+=str.substring(i, i+1);
-                    }
-                    out += "</li></ul>"
-                    return out;
-                }*/
-                var htmlWithUl = function(str) {
-                    var i, out="<ul>", j, is_bullet = false;
-                    for (i = 0; i < str.length; i++) {
-                        if (str.charCodeAt(i) === 45 && !is_bullet)
-                        {
-                            j = i - 1;
-                            while (true)
-                            {
-                                if (str.charCodeAt(j) === 10 || j <= 0)
-                                {
-                                    is_bullet = true;
-                                    break;
-                                }
-                                if (str.charCodeAt(j) > 32)
-                                {
-                                    is_bullet = false;
-                                    break;
-                                }
-                                j -= 1;
+            var htmlWithUl = function (str) {
+                var i, out = "<ul>", j, is_bullet = false;
+                for (i = 0; i < str.length; i++) {
+                    if (str.charCodeAt(i) === 45 && !is_bullet) {
+                        j = i - 1;
+                        while (true) {
+                            if (str.charCodeAt(j) === 10 || j <= 0) {
+                                is_bullet = true;
+                                break;
                             }
-                            if (is_bullet)
-                            {
-                                out += "<li>";
+                            if (str.charCodeAt(j) > 32) {
+                                is_bullet = false;
+                                break;
                             }
-                                
+                            j -= 1;
                         }
-                        else if (str.charCodeAt(i) === 10 && is_bullet)
-                        {
-                            out += "</li>";
-                            is_bullet = false;
+                        if (is_bullet) {
+                            out += "<li>";
                         }
-                        else
-                        {
-                            if (str.charCodeAt(i) === 10) out += "<br>";
-                            out += str.substring(i, i + 1);
-                        }
-                        
-                        
-                        if (((str.length - 1) === i) && is_bullet)
-                        {
-                            out += "</li>";
-                            is_bullet = false;
-                        }
-                        
-                        
+
                     }
-                    out += "</ul>"
-                    return out;
-                }
-                var htmlWithBreaks = function(str) {
-                    var i, out="";
-                    for (i = 0; i < str.length; i++) {
+                    else if (str.charCodeAt(i) === 10 && is_bullet) {
+                        out += "</li>";
+                        is_bullet = false;
+                    }
+                    else {
                         if (str.charCodeAt(i) === 10) out += "<br>";
-                        else out+=str.substring(i, i+1);
+                        out += str.substring(i, i + 1);
                     }
-                    return out;
-                }
-                var getUrlFromString = function(str) {
-                    'use strict';
-                    var start, end;
-                    start = str.indexOf("http");
-                    if (start === -1) {
-                        start = str.indexOf("www");
-                    }
-                    if (start === -1) {
-                        return "";
-                    }
-                    for (end = start; end <= str.length; end += 1) {
-                        if (end < str.length && (str.charCodeAt(end) < 33 || str.charCodeAt(end) > 126) ) {
-                            break;
-                        }
-                    }
-                    return str.substring(start, end);
-                }
-                var urlsToLinks = function(str) {
-                    'use strict';
-                    var start, end, url;
-                    start = str.indexOf("http");
-                    if (start === -1) {
-                        start = str.indexOf("www");
-                    }
-                    if (start === -1)
-                    {
-                        start = str.indexOf("https");
-                    }
-                    if (start === -1) {
-                        return "";
-                    }
-                    for (end = start; end <= str.length; end += 1) {
-                        if (end < str.length && (str.charCodeAt(end) < 33 || str.charCodeAt(end) > 126) ) {
-                            break;
-                        }
-                    }
-                    url = str.substring(start, end);
-                    return str.substring(0, start) + "<a href = '" + url + "' >" + url + "</a>" + str.substring(end);
-                }
 
 
-
-                this.makeList = function() {
-                    'use strict';
-                    var str = "", i, j;
-                    for (i = 0; i < addresses.length; i += 1) {
-                        /*for (j = 0; j < schools_data[addresses[i].school].length; j += 1) {
-                        str += makeRowHtml(schools_data[addresses[i].school][j]);
-                    }*/
-                        str += this.makeRowHtml(schools_data[addresses[i].school][addresses[i].index], i);
+                    if (((str.length - 1) === i) && is_bullet) {
+                        out += "</li>";
+                        is_bullet = false;
                     }
-                    //console.log(str);
-                    return str;
-                }
 
+
+                }
+                out += "</ul>"
+                return out;
             }
-
-        </script><!--This script is for building the list. DONE-->
-        <script type="text/javascript">
-            /*global $, jQuery*/
-            /*global var, SCHOOLS_LIST*/
-            /*global var, address_list*/
-            function correctSchool(school_index) {
+            var htmlWithBreaks = function (str) {
+                var i, out = "";
+                for (i = 0; i < str.length; i++) {
+                    if (str.charCodeAt(i) === 10) out += "<br>";
+                    else out += str.substring(i, i + 1);
+                }
+                return out;
+            }
+            var getUrlFromString = function (str) {
                 'use strict';
-                return document.getElementById(SCHOOLS_LIST[school_index].toLowerCase() + "-filter").checked;
-            }
-
-            function correctZip(address, schools_data) {
-                'use strict';
-                var i, cell, zip = document.getElementById("zip-filter").value;
-                if (zip.length !== 5) {
-                    if (zip.length > 0) {
-                        document.getElementById("zip-filter").value = "incorrect zip code";
-                    }
-                    return true;
+                var start, end;
+                start = str.indexOf("http");
+                if (start === -1) {
+                    start = str.indexOf("www");
                 }
-                cell = schools_data[address.school][address.index]["Contact Info"];
-                for (i = 0; i < cell.length - 5; i += 1) {
-
-                    if (cell.substring(i, i + 5) === zip) {
-                        return true;
-                    }
+                if (start === -1) {
+                    return "";
                 }
-                return false;
-            }
-            /*
-            function correctEligibility(address, schools_data) {
-                'use strict';
-                var i, cell, yes = document.getElementById("internship-yes-filter").checked, no = document.getElementById("internship-no-filter").checked, no_but = document.getElementById("internship-no-but-filter").checked, other = document.getElementById("internship-other-filter").checked;
-
-                cell = schools_data[address.school][address.index]["Participation/Eligibility"];
-                switch (yesNoFromString(cell)) {
-                    case "yes":
-                        return yes;
-                    case "no":
-                        return no;
-                    case "no, but":
-                        return no_but;
-                    case "other":
-                        return other;
-                }
-            }
-*/
-            function correctEligibility(address, schools_data)
-            {
-                if (!document.getElementById("confirmed-filter").checked)
-                    return true;
-                cell = schools_data[address.school][address.index]["Participation/Eligibility"];
-                return yesNoFromString(cell) === "yes";
-            }
-
-            function correctCategory(address, schools_data) {
-                'use strict';
-                var selected, selectedId, cell, i;
-                selected = document.getElementsByClassName("selected");
-                for (i = 0; i < selected.length; i += 1) {
-                    if (selected[i].classList.contains("tab")) {
-                        selectedId = selected[i].id;
+                for (end = start; end <= str.length; end += 1) {
+                    if (end < str.length && (str.charCodeAt(end) < 33 || str.charCodeAt(end) > 126)) {
                         break;
                     }
                 }
-                if (selectedId.length === 0) {
-                    selectedId.push("all");
+                return str.substring(start, end);
+            }
+            var urlsToLinks = function (str) {
+                'use strict';
+                var start, end, url;
+                start = str.indexOf("http");
+                if (start === -1) {
+                    start = str.indexOf("www");
                 }
-                if (selectedId.includes("all")) {
+                if (start === -1) {
+                    start = str.indexOf("https");
+                }
+                if (start === -1) {
+                    return "";
+                }
+                for (end = start; end <= str.length; end += 1) {
+                    if (end < str.length && (str.charCodeAt(end) < 33 || str.charCodeAt(end) > 126)) {
+                        break;
+                    }
+                }
+                url = str.substring(start, end);
+                return str.substring(0, start) + "<a href = '" + url + "' >" + url + "</a>" + str.substring(end);
+            }
+
+
+
+            this.makeList = function () {
+                'use strict';
+                var str = "", i, j;
+                for (i = 0; i < addresses.length; i += 1) {
+                    /*for (j = 0; j < schools_data[addresses[i].school].length; j += 1) {
+                    str += makeRowHtml(schools_data[addresses[i].school][j]);
+                }*/
+                    str += this.makeRowHtml(schools_data[addresses[i].school][addresses[i].index], i);
+                }
+                //console.log(str);
+                return str;
+            }
+
+        }
+
+    </script>
+    <!--This script is for building the list. DONE-->
+    <script type="text/javascript">
+        /*global $, jQuery*/
+        /*global var, SCHOOLS_LIST*/
+        /*global var, address_list*/
+        function correctSchool(school_index) {
+            'use strict';
+            return document.getElementById(SCHOOLS_LIST[school_index].toLowerCase() + "-filter").checked;
+        }
+
+        function correctZip(address, schools_data) {
+            'use strict';
+            var i, cell, zip = document.getElementById("zip-filter").value;
+            if (zip.length !== 5) {
+                if (zip.length > 0) {
+                    document.getElementById("zip-filter").value = "incorrect zip code";
+                }
+                return true;
+            }
+            cell = schools_data[address.school][address.index]["Contact Info"];
+            for (i = 0; i < cell.length - 5; i += 1) {
+
+                if (cell.substring(i, i + 5) === zip) {
                     return true;
                 }
-                cell = schools_data[address.school][address.index]["Pin Color/Designation"];
-                var a = selectedId.toLowerCase();
-                var b = (cell.substring(0, cell.length)).toLowerCase();
-                return a.includes(b);
+            }
+            return false;
+        }
+        /*
+        function correctEligibility(address, schools_data) {
+            'use strict';
+            var i, cell, yes = document.getElementById("internship-yes-filter").checked, no = document.getElementById("internship-no-filter").checked, no_but = document.getElementById("internship-no-but-filter").checked, other = document.getElementById("internship-other-filter").checked;
+
+            cell = schools_data[address.school][address.index]["Participation/Eligibility"];
+            switch (yesNoFromString(cell)) {
+                case "yes":
+                    return yes;
+                case "no":
+                    return no;
+                case "no, but":
+                    return no_but;
+                case "other":
+                    return other;
+            }
+        }
+*/
+        function correctEligibility(address, schools_data) {
+            if (!document.getElementById("confirmed-filter").checked)
+                return true;
+            cell = schools_data[address.school][address.index]["Participation/Eligibility"];
+            return yesNoFromString(cell) === "yes";
+        }
+
+        function correctCategory(address, schools_data) {
+            'use strict';
+            var selected, selectedId, cell, i;
+            selected = document.getElementsByClassName("selected");
+            for (i = 0; i < selected.length; i += 1) {
+                if (selected[i].classList.contains("tab")) {
+                    selectedId = selected[i].id;
+                    break;
+                }
+            }
+            if (selectedId.length === 0) {
+                selectedId.push("all");
+            }
+            if (selectedId.includes("all")) {
+                return true;
+            }
+            cell = schools_data[address.school][address.index]["Pin Color/Designation"];
+            var a = selectedId.toLowerCase();
+            var b = (cell.substring(0, cell.length)).toLowerCase();
+            return a.includes(b) && b !== '';
+        }
+
+
+
+        function yesNoFromString(str) {
+            'use strict';
+            str = " " + str + " ";
+            if (str.search(/ yes/i) !== -1) return "yes";
+            if (str.search(/ no/i) !== -1) {
+                if (str.search(/ but/i) !== -1) return "no, but";
+                return "no";
+            }
+            return "other";
+        }
+
+        function update() {
+            "use strict";
+
+            var i, j, temp, addresses = [], schools_data = [], school_index, list;
+            for (i = 0; i < SCHOOLS_LIST.length; i += 1) {
+                schools_data.push(JSON.parse(localStorage.getItem(SCHOOLS_LIST[i])));
             }
 
-
-
-            function yesNoFromString(str) {
-                'use strict';
-                str = " " + str + " ";
-                if (str.search(/ yes/i) !== -1) return "yes";
-                if (str.search(/ no/i) !== -1) {
-                    if (str.search(/ but/i) !== -1) return "no, but";
-                    return "no";
+            for (i = 0; i < address_list.length; i += 1) {
+                school_index = address_list[i].school;
+                if (correctSchool(school_index) && correctZip(address_list[i], schools_data) && correctEligibility(address_list[i], schools_data) && correctCategory(address_list[i], schools_data)) { //Check if the box corresponding with the school is checked
+                    addresses.push(address_list[i]);
                 }
-                return "other";
             }
 
-            function update() {
-                "use strict";
-
-                var i, j, temp, addresses = [], schools_data = [], school_index, list;
-                for (i = 0; i < SCHOOLS_LIST.length; i += 1) {
-                    schools_data.push(JSON.parse(localStorage.getItem(SCHOOLS_LIST[i])));
-                }
-
-                for (i = 0; i < address_list.length; i += 1) {
-                    school_index = address_list[i].school;
-                    if (correctSchool(school_index) && correctZip(address_list[i], schools_data) && correctEligibility(address_list[i], schools_data) && correctCategory(address_list[i], schools_data)) { //Check if the box corresponding with the school is checked
-                        addresses.push(address_list[i]);
+            //Bubble sort I think
+            for (i = 0; i < addresses.length; i += 1) {
+                for (j = 0; j < addresses.length - 1 - i; j += 1) {
+                    if (addresses[j].relevance > addresses[j + 1].relevance) {
+                        temp = addresses[j];
+                        addresses[j] = addresses[j + 1];
+                        addresses[j + 1] = temp;
                     }
                 }
+            }
+            list = new HtmlList(schools_data, addresses);
+            document.getElementById("list").innerHTML = list.makeList();
+        }
 
-                //Bubble sort I think
-                for (i = 0; i < addresses.length; i += 1) {
-                    for (j = 0; j < addresses.length - 1 - i; j += 1) {
-                        if (addresses[j].relevance > addresses[j + 1].relevance) {
-                            temp = addresses[j];
-                            addresses[j] = addresses[j + 1];
-                            addresses[j + 1] = temp;
+        $(document).ready(function () {
+            "use strict";
+            $(".filter, :checkbox").on("click", update);
+            $(document).keypress(function (event) {
+                if (event.which === 13 || (event.target.id === "zip-filter" && event.target.value.length === 5)) {
+                    update();
+                }
+
+            });
+        });
+    </script>
+    <!--This script is for updating and filtering.-->
+    <script type="text/javascript">
+        /* function School(name, arr) {
+        this.name = name;
+        this.data = arr;
+        this.
+    }*/
+    </script>
+    <!--This script is for the School type thing-->
+    <script type="text/javascript">
+        /*global $, jQuery*/
+        /*global var, SCHOOLS_LIST*/
+        var address_list;
+
+        function setAddressesAll() {                                    //TERRIBLY INEFFICIENT PLEASE FIX BEFORE FINAL RELEASE
+            "use strict";
+            var i, j, current = [], addresses = [];
+            for (i = 0; i < SCHOOLS_LIST.length; i += 1) {
+                current = JSON.parse(localStorage.getItem(SCHOOLS_LIST[i]));
+
+                for (j = 0; j < current.length; j += 1) {
+                    addresses.push({
+                        school: i,
+                        index: j,
+                        relevance: 1
+                    });
+                }
+            }
+            address_list = addresses;
+        }
+
+        function keywordSearch() {
+            "use strict";
+            var i, j, attribute, k, relevance, current = [], addresses = [], keyword;
+            keyword = document.getElementById("keyword_search").value;
+            for (i = 0; i < SCHOOLS_LIST.length; i += 1) {
+                current = JSON.parse(localStorage.getItem(SCHOOLS_LIST[i]));
+                for (j = 0; j < current.length; j += 1) {
+                    relevance = 0;
+
+                    for (attribute in current[j]) {
+                        if (current[j].hasOwnProperty(attribute)) {
+                            for (k = 0; k < current[i][attribute].length - keyword.length; k += 1) {
+                                if (current[j][attribute].substring(k, k + keyword.length) === keyword) {
+                                    relevance += 1;
+                                }
+                            }
+                            //relevance += (current[j][attribute].match(/is/g) || []).length;
                         }
                     }
-                }
-                list = new HtmlList(schools_data, addresses);
-                document.getElementById("list").innerHTML = list.makeList();
-            }
-
-            $(document).ready(function () {
-                "use strict";
-                $(".filter, :checkbox").on("click", update);
-                $(document).keypress(function (event) {
-                    if (event.which === 13 || (event.target.id === "zip-filter" && event.target.value.length === 5)) {
-                        update();
-                    }
-
-                });
-            });
-        </script><!--This script is for updating and filtering.-->
-        <script type="text/javascript">
-            /* function School(name, arr) {
-            this.name = name;
-            this.data = arr;
-            this.
-        }*/
-        </script><!--This script is for the School type thing-->
-        <script type="text/javascript">
-            /*global $, jQuery*/
-            /*global var, SCHOOLS_LIST*/
-            var address_list;
-
-            function setAddressesAll() {                                    //TERRIBLY INEFFICIENT PLEASE FIX BEFORE FINAL RELEASE
-                "use strict";
-                var i, j, current = [], addresses = [];
-                for (i = 0; i < SCHOOLS_LIST.length; i += 1) {
-                    current = JSON.parse(localStorage.getItem(SCHOOLS_LIST[i]));
-
-                    for (j = 0; j < current.length; j += 1) {
+                    if (relevance > 0) {
                         addresses.push({
                             school: i,
                             index: j,
-                            relevance: 1
+                            relevance: relevance
                         });
                     }
-                }
-                address_list = addresses;
-            }
 
-            function keywordSearch() {
-                "use strict";
-                var i, j, attribute, k, relevance, current = [], addresses = [], keyword;
-                keyword = document.getElementById("keyword_search").value;
-                for (i = 0; i < SCHOOLS_LIST.length; i += 1) {
-                    current = JSON.parse(localStorage.getItem(SCHOOLS_LIST[i]));
-                    for (j = 0; j < current.length; j += 1) {
-                        relevance = 0;
-
-                        for (attribute in current[j]) {
-                            if (current[j].hasOwnProperty(attribute)) {
-                                for (k = 0; k < current[i][attribute].length - keyword.length; k += 1) {
-                                    if (current[j][attribute].substring(k, k + keyword.length) === keyword) {
-                                        relevance += 1;
-                                    }
-                                }
-                                //relevance += (current[j][attribute].match(/is/g) || []).length;
-                            }
-                        }
-                        if (relevance > 0) {
-                            addresses.push({
-                                school: i,
-                                index: j,
-                                relevance: relevance
-                            });
-                        }
-
-                    }
-                }
-                address_list = addresses;
-                update();
-            }
-        </script><!--This is the search related script. It builds the addresslist-->
-        <script type="text/javascript">
-            function tabSetup() {
-                var i, tabs, selfLinks;
-                tabs = document.getElementsByClassName("tab");
-                for (i = 0; i < tabs.length; i += 1) {
-                    tabs[i].onclick = select;
                 }
             }
-            function toTopSetup() {
-                var link = document.getElementsByClassName("to-top")[0], scroll = document.getElementById("list");
-                if (window.getComputedStyle(scroll).overflow === "scroll") {
-                    link.onclick = function () {
-                        scroll.scrollTop = 0;
-                        return false;
-                    };
-                }
+            address_list = addresses;
+            update();
+        }
+    </script>
+    <!--This is the search related script. It builds the addresslist-->
+    <script type="text/javascript">
+        function tabSetup() {
+            var i, tabs, selfLinks;
+            tabs = document.getElementsByClassName("tab");
+            for (i = 0; i < tabs.length; i += 1) {
+                tabs[i].onclick = select;
             }
-            function select() {
-                clearSelect();
-                this.classList.add("selected");
-                update();
+        }
+        function toTopSetup() {
+            var link = document.getElementsByClassName("to-top")[0], scroll = document.getElementById("list");
+            if (window.getComputedStyle(scroll).overflow === "scroll") {
+                link.onclick = function () {
+                    scroll.scrollTop = 0;
+                    return false;
+                };
             }
-            function clearSelect() {
-                var i, tabs;
-                tabs = document.getElementsByClassName("tab");
-                for (i = 0; i < tabs.length; i += 1) {
-                    tabs[i].classList.remove("selected");
-                }
+        }
+        function select() {
+            clearSelect();
+            this.classList.add("selected");
+            update();
+        }
+        function clearSelect() {
+            var i, tabs;
+            tabs = document.getElementsByClassName("tab");
+            for (i = 0; i < tabs.length; i += 1) {
+                tabs[i].classList.remove("selected");
             }
-            window.onload = tabSetup;
-        </script><!--This is just simple navigation (specifically, the tabs above the list)-->
-        <script type="text/javascript"> //THIS IS THE MAIN SCRIPT (that gets all the information using Tabletop and sets things in motion, you see)
-            const SCHOOLS_LIST = ["CAMS", /*"Jordan",*/ "Lakewood", "McBride", "Poly"];
-            //var publicSpreadSheetUrl = 'https://docs.google.com/spreadsheets/d/1zYOguWMR28cfWa1JMmnXWWKy6TVkPuTaOTv9ho8rY7k/edit?usp=sharing';	//This is the old copy
-            var publicSpreadSheetUrl = 'https://docs.google.com/spreadsheets/d/1nDk-3pqoJfGT_sdpBmAXWedU0neXZqtZH8dL3J4FVXU/edit?usp=sharing'; 	//This is the original that is still living and changing
-            function init() {
-                Tabletop.init( {        //Singleton? //Authkey? //Parameterize?
-                    key: publicSpreadSheetUrl,
-                    callback: recordInfo,
-                    debug: false } )
-            }
-            function recordInfo(data, tabletop) {
-                //console.log(data);
-                storeSchool(tabletop, "CAMS");
-                //storeSchool(tabletop, "Jordan");
-                storeSchool(tabletop, "Lakewood"); //The issue here is that in the original doc it got named with a space in it :(
-                storeSchool(tabletop, "McBride");
-                storeSchool(tabletop, "Poly");
-                setAddressesAll();
-                update();
+        }
+        window.onload = tabSetup;
+    </script>
+    <!--This is just simple navigation (specifically, the tabs above the list)-->
+    <script type="text/javascript"> //THIS IS THE MAIN SCRIPT (that gets all the information using Tabletop and sets things in motion, you see)
+        const SCHOOLS_LIST = ["CAMS", /*"Jordan",*/ "Lakewood", "McBride", "Poly"];
+        // This is the URL of the no-edit public copy
+        var publicSpreadSheetUrl = "https://docs.google.com/spreadsheets/d/1sR0WE-VpgvdccZWHSMWuc7j7ZqkVJavosGG5jGHdxjQ/edit#gid=1715596439"
+        function init() {
+            Tabletop.init({        //Singleton? //Authkey? //Parameterize?
+                key: publicSpreadSheetUrl,
+                callback: recordInfo,
+                debug: false
+            })
+        }
+        function recordInfo(data, tabletop) {
+            //console.log(data);
+            storeSchool(tabletop, "CAMS");
+            //storeSchool(tabletop, "Jordan");
+            storeSchool(tabletop, "Lakewood"); //The issue here is that in the original doc it got named with a space in it :(
+            storeSchool(tabletop, "McBride");
+            storeSchool(tabletop, "Poly");
+            setAddressesAll();
+            update();
 
 
-                toTopSetup();
-            }
+            toTopSetup();
+        }
 
-            function storeSchool(tabletop, school_name) {
-                localStorage.setItem(school_name, JSON.stringify(tabletop.sheets(school_name).all()));
-            }
+        function storeSchool(tabletop, school_name) {
+            localStorage.setItem(school_name, JSON.stringify(tabletop.sheets(school_name).all()));
+        }
 
 
 
-            window.addEventListener('DOMContentLoaded', init);
-        </script>
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
 
-        <!--TODO 
+    <!--TODO 
 1. Put the school processing and accessing methods actually in the School objects, okay? Ah. There are no school objects. But I can make them?
 2. 
 -->
 
-    </head>
+</head>
 
 
 
 
 
 
-    <body>
-        <div class="wsite-form-input-container wsite-form-left wsite-form-input-first-name">
-            <input id="keyword_search" class="wsite-form-input wsite-input" type="text" placeholder="Keyword"/>
-            <label class="wsite-form-sublabel" for="keyword_search">Keyword</label>
-            <button class="wsite-button wsite-button-small wsite-button-normal" id="search-button" onclick="keywordSearch()">
-                <span class="wsite-button-inner">Search</span>
-            </button>
+<body>
+    <div class="wsite-form-input-container wsite-form-left wsite-form-input-first-name">
+        <input id="keyword_search" class="wsite-form-input wsite-input" type="text" placeholder="Keyword" />
+        <label class="wsite-form-sublabel" for="keyword_search">Keyword</label>
+        <button class="wsite-button wsite-button-small wsite-button-normal" id="search-button"
+            onclick="keywordSearch()">
+            <span class="wsite-button-inner">Search</span>
+        </button>
+    </div>
+
+
+
+    <div id="filters" class="main">
+        <div class="paragraph">
+            <font color="#000"><strong>School</strong></font>
         </div>
+        <!--If these ID's get changed, the world will explode. Don't do it.-->
 
-
-
-        <div id="filters" class="main">
-            <div class="paragraph"><font color="#000"><strong>School</strong></font></div>
-            <!--If these ID's get changed, the world will explode. Don't do it.-->
-
-            <div class="paragraph"><font color="#2a2a2a">
+        <div class="paragraph">
+            <font color="#2a2a2a">
                 <div class="wsite-form-radio-container">
 
                     <span class='form-radio-container inline-item' style="display:inline-block !important;
-                                                                          padding-right: 2em !important;"><input type='checkbox' id='cams-filter' checked='checked' /><label for='cams-filter'>CAMS</label></span>
+                                                                          padding-right: 2em !important;"><input
+                            type='checkbox' id='cams-filter' checked='checked' /><label for='cams-filter'>CAMS</label></span>
                     <!--
 <span class='form-radio-container inline-item' style="display:inline-block !important;
 padding-right: 2em !important;"><input type='checkbox' id='jordan-filter' /><label for='jordan-filter'>Jordan</label></span>
 -->
                     <span class='form-radio-container inline-item' style="display:inline-block !important;
-                                                                          padding-right: 2em !important;"><input type='checkbox' id='lakewood-filter' /><label for='lakewood-filter'>Lakewood</label></span>
+                                                                          padding-right: 2em !important;"><input
+                            type='checkbox' id='lakewood-filter' /><label for='lakewood-filter'>Lakewood</label></span>
 
                     <span class='form-radio-container inline-item' style="display:inline-block !important;
-                                                                          padding-right: 2em !important;"><input type='checkbox' id='mcbride-filter' /><label for='mcbride-filter'>McBride</label></span>
+                                                                          padding-right: 2em !important;"><input
+                            type='checkbox' id='mcbride-filter' /><label for='mcbride-filter'>McBride</label></span>
 
                     <span class='form-radio-container inline-item' style="display:inline-block !important;
-                                                                          padding-right: 2em !important;"><input type='checkbox' id='poly-filter' /><label for='poly-filter'>Poly</label></span>
+                                                                          padding-right: 2em !important;"><input
+                            type='checkbox' id='poly-filter' /><label
+                            for='poly-filter'>Poly</label></span>
 
 
                 </div>
 
-                </font></div>
+            </font>
+        </div>
 
-            <div class="paragraph"><font color="#000"><strong>ZIP code</strong></font></div>
+        <div class="paragraph">
+            <font color="#000"><strong>ZIP code</strong></font>
+        </div>
 
-            <div class="wsite-form-input-container" >
-                <input id="zip-filter" class="wsite-form-input wsite-input" placeholder="Five Digit ZIP" style="margin-left: 0"/>
-                <!--<label class="wsite-form-sublabel" for="zip-filter">Five digit ZIP</label>-->
-            </div><br>
+        <div class="wsite-form-input-container">
+            <input id="zip-filter" class="wsite-form-input wsite-input" placeholder="Five Digit ZIP"
+                style="margin-left: 0" />
+            <!--<label class="wsite-form-sublabel" for="zip-filter">Five digit ZIP</label>-->
+        </div><br>
 
-            <div class="wsite-form-radio-container" id="confirmed_group">
+        <div class="wsite-form-radio-container" id="confirmed_group">
 
-                <div class="paragraph"><font color="#2a2a2a">
+            <div class="paragraph">
+                <font color="#2a2a2a">
 
                     <span class='form-radio-container inline-item' style="display:inline-block !important;
-                                                                          padding-right: 2em !important;"><input type='checkbox' id='confirmed-filter' checked="checked"/><label for='confirmed-filter'>Show only sites with a confirmed program with LBUSD</label></span>
+                                                                          padding-right: 2em !important;"><input
+                            type='checkbox' id='confirmed-filter' checked="checked" /><label for='confirmed-filter'>Show
+                            only sites with a confirmed program with LBUSD</label></span>
 
-                    </font></div>
+                </font>
             </div>
-            <br>
+        </div>
+        <br>
 
-            <!--
+        <!--
 <div class="wsite-form-radio-container" id="internship_filter_group">
 
 <div class="paragraph"><font color="#000"><strong>Is there an internship?</strong></font></div>
@@ -720,29 +768,53 @@ padding-right: 2em !important;"><input type='checkbox' id='internship-other-filt
 </div>
 -->
 
-            <div class="wsite-form-radio-container" id="student_type_filter_group">
-                <div class="paragraph"><font color="#000"><strong>Student type</strong></font></div>
+        <div class="wsite-form-radio-container" id="student_type_filter_group">
+            <div class="paragraph">
+                <font color="#000"><strong>Student type</strong></font>
             </div>
-
         </div>
-        <div class="flex-container">
-            <iframe src="https://www.google.com/maps/d/u/1/embed?mid=1zbXGUI8yrqemRjGsKHZmXWdLbVA7XJli" width="640" height="480" style=""></iframe>
 
-            <div id="list-container">
-                <div id="tabs"><div class="tab selected" id="tab_all">All</div><div class="tab" id="tab_hospitals"><div class="color-dot label-hospitals"></div>Hospitals</div><div class="tab" id="tab_clinics"><div class="color-dot label-clinics"></div>Clinics</div><div class="tab" id="tab_schools"><div class="color-dot label-schools"></div>Schools</div><div class="tab" id="tab_faith-based"><div class="color-dot label-faith-based"></div>Faith-Based</div><div class="tab" id="tab_government"><div class="color-dot label-government"></div>Government</div></div>
+    </div>
+    <div class="flex-container">
+        <iframe src="https://www.google.com/maps/d/u/2/embed?mid=1P3tqpgFUydNLokTSiDzmhj8KMHfvvH37"></iframe>
 
-                <a class="to-top wsite-button wsite-button-small wsite-button-normal" href="#top" class="wsite-button-inner">
-                    <span class="wsite-button-inner">To Top</span>
-                </a>
-
-                
-
-
-
-                <div id="list">
-
+        <div id="list-container">
+            <div id="tabs">
+                <div class="tab selected" id="tab_all">All</div>
+                <div class="tab" id="tab_hospitals">
+                    <div class="color-dot label-hospitals"></div>Hospitals
+                </div>
+                <div class="tab" id="tab_clinics">
+                    <div class="color-dot label-clinics"></div>Clinics
+                </div>
+                <div class="tab" id="tab_schools">
+                    <div class="color-dot label-schools"></div>Schools
+                </div>
+                <div class="tab" id="tab_faith-based">
+                    <div class="color-dot label-faith-based"></div>Faith-Based
+                </div>
+                <div class="tab" id="tab_government">
+                    <div class="color-dot label-government"></div>Government
+                </div>
+                <div class="tab" id="tab_law">
+                    <div class="color-dot label-law"></div>Law
                 </div>
             </div>
+
+            <a class="to-top wsite-button wsite-button-small wsite-button-normal" href="#top"
+                class="wsite-button-inner">
+                <span class="wsite-button-inner">To Top</span>
+            </a>
+
+
+
+
+
+            <div id="list">
+                
+            </div>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>
