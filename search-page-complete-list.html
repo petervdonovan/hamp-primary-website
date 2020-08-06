@@ -7,6 +7,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
     <style>
+        .form-radio-container.inline-item input {
+            position: relative;
+            top: 0.25em;
+            margin: 0 0.5em;
+        }
+        #search-button {
+            position: relative;
+            top: 1em;
+        }
         #internship_filter_group {
             display: none;
         }
@@ -111,7 +120,7 @@
 
         #tabs {
             padding: 0;
-            margin: 0 1.5vh;
+            margin: 0;
         }
 
         .tab {
@@ -138,7 +147,7 @@
             background-color: orange;
         }
 
-        .label-clinics {
+        .label-nonprofits {
             background-color: blue;
         }
 
@@ -210,11 +219,11 @@
             var str = "";
             str += "<div id='organizationCard'>";
             str += "<a href='organization-details.html'> <h3>" + row["Site Name"] + "</h3> </a>";
-            if (row["Participation/Eligibility"]) {
-                str += "<p>Internship program: " + row["Participation/Eligibility"] + "</p>";
+            if (row["Confirmed Participation in Any Form\n(yes/no and time last updated)"]) {
+                str += "<p>Internship program: " + row["Confirmed Participation in Any Form\n(yes/no and time last updated)"] + "</p>";
             }
-            if (row["\nStudent Type:\nHigh school? College? Both?"]) {
-                str += "<p>Student type: " + row["\nStudent Type:\nHigh school? College? Both?"] + "</p>";
+            if (row["Student Type:\n(High school? College? Both?)"]) {
+                str += "<p>Student type: " + row["Student Type:\n(High school? College? Both?)"] + "</p>";
             }
             str += "</div>";
             return str;
@@ -223,17 +232,17 @@
             'use strict';
             var str = "", color = "", color_dot = "";
 
-    color_dot = "<div style=\"background-color: " + colorFromType(row["Pin Color/Designation"]) +"; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;\"></div>";
+    color_dot = "<div style=\"background-color: " + colorFromType(row["Pin Type"]) +"; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;\"></div>";
 
 
             str += "<div class='organizationCard paragraph'" + "onclick = \"(function() {if (document.getElementById(\'detail" + index + "\').style.display !== 'block') document.getElementById(\'detail" + index + "\').style.display = 'block'; else document.getElementById(\'detail" + index + "\').style.display = 'none'; })()\"" + ">";
             str += "<h3>" + color_dot + row["Site Name"] + "</h3>";
             str += "<div class=\"details\" id=\"detail" + index + "\">";
-            if (row["Contact Info"]) {
-                str += "<p>Contact Information: </p> <div class='indented'>" + htmlWithBreaks(urlsToLinks(row["Contact Info"])) + "</div>";
+            if (row["Address\nPhone\nWebsite URL"]) {
+                str += "<p>Contact Information: </p> <div class='indented'>" + htmlWithBreaks(urlsToLinks(row["Address\nPhone\nWebsite URL"])) + "</div>";
             }
-            if (row["Description"]) {
-                str += "<p>Description: </p> " + htmlWithUl(row["Description"]);
+            if (row["Brief Statement of Organization's Purpose"]) {
+                str += "<p>Description: </p> " + htmlWithUl(row["Brief Statement of Organization's Purpose"]);
             }
             str += "</div>";
             str += "</div>";
@@ -243,9 +252,9 @@
             this.makeRowHtml = function (row, index) {
                 'use strict';
                 var str = "", color = "", color_dot = "";
-                color_dot = "<div style=\"background-color: " + colorFromType(row["Pin Color/Designation"]) + "; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;\"></div>";
+                color_dot = "<div style=\"background-color: " + colorFromType(row["Pin Type"]) + "; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;\"></div>";
                 str += "<div class='organizationCard paragraph";
-                if (yesNoFromString(row["Participation/Eligibility"]) !== "yes")
+                if (yesNoFromString(row["Confirmed Participation in Any Form\n(yes/no and time last updated)"]) !== "yes")
                     str += " unconfirmed";
                 str += "'";
                 if (index === 0) {
@@ -254,11 +263,11 @@
                 str += " onclick='(openDetail(" + index + "))' >";
                 str += "<h3>" + color_dot + row["Site Name"] + "</h3>";
                 str += "<div class=\"details\" id=\"detail" + index + "\">";
-                if (row["Contact Info"]) {
-                    str += "<p>Contact Information: </p> <div class='indented'>" + htmlWithBreaks(urlsToLinks(row["Contact Info"])) + "</div>";
+                if (row["Address\nPhone\nWebsite URL"]) {
+                    str += "<p>Contact Information: </p> <div class='indented'>" + htmlWithBreaks(urlsToLinks(row["Address\nPhone\nWebsite URL"])) + "</div>";
                 }
-                if (row["Description"]) {
-                    str += "<p>Description: </p> " + htmlWithUl(row["Description"]);
+                if (row["Brief Statement of Organization's Purpose"]) {
+                    str += "<p>Description: </p> " + htmlWithUl(row["Brief Statement of Organization's Purpose"]);
                 }
                 str += "</div>";
                 str += "</div>";
@@ -414,11 +423,11 @@
             var i, cell, zip = document.getElementById("zip-filter").value;
             if (zip.length !== 5) {
                 if (zip.length > 0) {
-                    document.getElementById("zip-filter").value = "incorrect zip code";
+                    //document.getElementById("zip-filter").value = "incorrect zip code";
                 }
                 return true;
             }
-            cell = schools_data[address.school][address.index]["Contact Info"];
+            cell = schools_data[address.school][address.index]["Address\nPhone\nWebsite URL"];
             for (i = 0; i < cell.length - 5; i += 1) {
 
                 if (cell.substring(i, i + 5) === zip) {
@@ -432,7 +441,7 @@
             'use strict';
             var i, cell, yes = document.getElementById("internship-yes-filter").checked, no = document.getElementById("internship-no-filter").checked, no_but = document.getElementById("internship-no-but-filter").checked, other = document.getElementById("internship-other-filter").checked;
 
-            cell = schools_data[address.school][address.index]["Participation/Eligibility"];
+            cell = schools_data[address.school][address.index]["Confirmed Participation in Any Form\n(yes/no and time last updated)"];
             switch (yesNoFromString(cell)) {
                 case "yes":
                     return yes;
@@ -448,7 +457,7 @@
         function correctEligibility(address, schools_data) {
             if (!document.getElementById("confirmed-filter").checked)
                 return true;
-            cell = schools_data[address.school][address.index]["Participation/Eligibility"];
+            cell = schools_data[address.school][address.index]["Confirmed Participation in Any Form\n(yes/no and time last updated)"];
             return yesNoFromString(cell) === "yes";
         }
 
@@ -468,7 +477,7 @@
             if (selectedId.includes("all")) {
                 return true;
             }
-            cell = schools_data[address.school][address.index]["Pin Color/Designation"];
+            cell = schools_data[address.school][address.index]["Pin Type"];
             var a = selectedId.toLowerCase();
             var b = (cell.substring(0, cell.length)).toLowerCase();
             return a.includes(b) && b !== '';
@@ -520,7 +529,7 @@
             "use strict";
             $(".filter, :checkbox").on("click", update);
             $(document).keypress(function (event) {
-                if (event.which === 13 || (event.target.id === "zip-filter" && event.target.value.length === 5)) {
+                if (event.which === 13 || (event.target.id === "zip-filter"/* && event.target.value.length === 4*/)) {
                     update();
                 }
 
@@ -784,8 +793,8 @@ padding-right: 2em !important;"><input type='checkbox' id='internship-other-filt
                 <div class="tab" id="tab_hospitals">
                     <div class="color-dot label-hospitals"></div>Hospitals
                 </div>
-                <div class="tab" id="tab_clinics">
-                    <div class="color-dot label-clinics"></div>Clinics
+                <div class="tab" id="tab_nonprofits">
+                    <div class="color-dot label-nonprofits"></div>Nonprofits
                 </div>
                 <div class="tab" id="tab_schools">
                     <div class="color-dot label-schools"></div>Schools
