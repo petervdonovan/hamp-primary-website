@@ -210,45 +210,18 @@
                 document.getElementById('detail' + index).style.display = "none";
             }
         }
+        function escapeDoubleQuotes(str) {
+            parts = str.split("\"");
+            return parts.join("_esc34");
+        }
+        function unescapeDoubleQuotes(str) {
+            parts = str.split("_esc34");
+            return parts.join("\"");
+        }
 
         function HtmlList(schools_data, addresses) {
             this.schools_data = schools_data;
             this.addresses = addresses;
-            /*this.makeRowHtml = function(row) {
-            'use strict';
-            var str = "";
-            str += "<div id='organizationCard'>";
-            str += "<a href='organization-details.html'> <h3>" + row["Site Name"] + "</h3> </a>";
-            if (row["Confirmed Participation in Any Form\n(yes/no and time last updated)"]) {
-                str += "<p>Internship program: " + row["Confirmed Participation in Any Form\n(yes/no and time last updated)"] + "</p>";
-            }
-            if (row["Student Type:\n(High school? College? Both?)"]) {
-                str += "<p>Student type: " + row["Student Type:\n(High school? College? Both?)"] + "</p>";
-            }
-            str += "</div>";
-            return str;
-        }*/
-            /*this.makeRowHtml = function(row, index) {
-            'use strict';
-            var str = "", color = "", color_dot = "";
-
-    color_dot = "<div style=\"background-color: " + colorFromType(row["Pin Type"]) +"; border-radius: 0.4em; width: 0.8em; height: 0.8em; display: inline-block; margin: 0em 0.5em 0em 0.5em;\"></div>";
-
-
-            str += "<div class='organizationCard paragraph'" + "onclick = \"(function() {if (document.getElementById(\'detail" + index + "\').style.display !== 'block') document.getElementById(\'detail" + index + "\').style.display = 'block'; else document.getElementById(\'detail" + index + "\').style.display = 'none'; })()\"" + ">";
-            str += "<h3>" + color_dot + row["Site Name"] + "</h3>";
-            str += "<div class=\"details\" id=\"detail" + index + "\">";
-            if (row["Address\nPhone\nWebsite URL"]) {
-                str += "<p>Contact Information: </p> <div class='indented'>" + htmlWithBreaks(urlsToLinks(row["Address\nPhone\nWebsite URL"])) + "</div>";
-            }
-            if (row["Brief Statement of Organization's Purpose"]) {
-                str += "<p>Description: </p> " + htmlWithUl(row["Brief Statement of Organization's Purpose"]);
-            }
-            str += "</div>";
-            str += "</div>";
-
-            return str;
-        }*/
             this.makeRowHtml = function (row, index) {
                 'use strict';
                 var str = "", color = "", color_dot = "";
@@ -263,11 +236,26 @@
                 str += " onclick='(openDetail(" + index + "))' >";
                 str += "<h3>" + color_dot + row["Site Name"] + "</h3>";
                 str += "<div class=\"details\" id=\"detail" + index + "\">";
-                if (row["Address\nPhone\nWebsite URL"]) {
-                    str += "<p>Contact Information: </p> <div class='indented'>" + htmlWithBreaks(urlsToLinks(row["Address\nPhone\nWebsite URL"])) + "</div>";
-                }
                 if (row["Brief Statement of Organization's Purpose"]) {
-                    str += "<p>Description: </p> " + htmlWithUl(row["Brief Statement of Organization's Purpose"]);
+                    str += "<p>" + htmlWithBreaks(row["Brief Statement of Organization's Purpose"]) + "</p>";
+                }
+                if (row["Address\nPhone\nWebsite URL"]) {
+                    str += "<div class='indented'>" + htmlWithBreaks(urlsToLinks(row["Address\nPhone\nWebsite URL"])) + "</div>";
+                }
+                if (row["Internship/Volunteer Program Description"]) {
+                    str += "<p><strong>Internship Program:</strong> " + htmlWithBreaks(row["Internship/Volunteer Program Description"]) + "</p>";
+                }
+                var requirements = row["Internship Requirements/Logistics\n(Eligibility requirements, application deadlines, internship term, etc.)"];
+                if (requirements) {
+                    str += "<p><strong>Requirements:</strong> " + htmlWithUl(requirements) + "</p>";
+                }
+                var form_link = row["Student Internship Form Link"];
+                if(form_link) {
+                    console.log(escapeDoubleQuotes(JSON.stringify(row)));
+                    str += '<div style="position: relative; height: 1.5em;"><div style="position: absolute; right: 0"><a target="_blank" href="'
+                        + 'http://www.lbusdhealthassetmap.com/internship-details.html'
+                        + '?data=' + escapeDoubleQuotes(JSON.stringify(row))
+                        +  '">Interest Form</a></div></div>';
                 }
                 str += "</div>";
                 str += "</div>";
