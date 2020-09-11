@@ -1,0 +1,25 @@
+{
+  "name": "hamp-primary-website",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/petervdonovan/hamp-primary-website.git"
+  },
+  "author": "Peter Donovan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/petervdonovan/hamp-primary-website/issues"
+  },
+  "homepage": "https://github.com/petervdonovan/hamp-primary-website#readme",
+  "devDependencies": {
+    "css-loader": "^4.3.0",
+    "style-loader": "^1.2.1",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  }
+}

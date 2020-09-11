@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+    <style>
+        
+    </style>
+    <script src="main.js"></script>
+
+</head>
+
+
+
+
+
+
+<body>
+    <div class="wsite-form-input-container wsite-form-left wsite-form-input-first-name">
+        <input id="keyword_search" class="wsite-form-input wsite-input" type="text" placeholder="Keyword" />
+        <label class="wsite-form-sublabel" for="keyword_search">Keyword</label>
+        <button class="wsite-button wsite-button-small wsite-button-normal" id="search-button"
+            onclick="keywordSearch()">
+            <span class="wsite-button-inner">Search</span>
+        </button>
+    </div>
+
+
+
+    <div id="filters" class="main">
+        <div class="paragraph">
+            <font color="#000"><strong>School</strong></font>
+        </div>
+        <!--If these ID's get changed, the world will explode. Don't do it.-->
+
+        <div class="paragraph">
+            <font color="#2a2a2a">
+                <div class="wsite-form-radio-container">
+
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input
+                            type='checkbox' id='cams-filter' checked='checked' /><label for='cams-filter'>CAMS</label></span>
+                    <!--
+<span class='form-radio-container inline-item' style="display:inline-block !important;
+padding-right: 2em !important;"><input type='checkbox' id='jordan-filter' /><label for='jordan-filter'>Jordan</label></span>
+-->
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input
+                            type='checkbox' id='lakewood-filter' checked='checked' /><label for='lakewood-filter'>Lakewood</label></span>
+
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input
+                            type='checkbox' id='mcbride-filter' checked='checked' /><label for='mcbride-filter'>McBride</label></span>
+
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input
+                            type='checkbox' id='poly-filter' checked='checked' /><label
+                            for='poly-filter'>Poly</label></span>
+
+
+                </div>
+
+            </font>
+        </div>
+
+        <div class="paragraph">
+            <font color="#000"><strong>ZIP code</strong></font>
+        </div>
+
+        <div class="wsite-form-input-container">
+            <input id="zip-filter" class="wsite-form-input wsite-input" placeholder="Five Digit ZIP"
+                style="margin-left: 0" />
+            <!--<label class="wsite-form-sublabel" for="zip-filter">Five digit ZIP</label>-->
+        </div><br>
+
+        <div class="wsite-form-radio-container" id="confirmed_group">
+
+            <div class="paragraph">
+                <font color="#2a2a2a">
+
+                    <span class='form-radio-container inline-item' style="display:inline-block !important;
+                                                                          padding-right: 2em !important;"><input
+                            type='checkbox' id='confirmed-filter' checked="checked" /><label for='confirmed-filter'>Show
+                            only sites with a confirmed program with LBUSD</label></span>
+
+                </font>
+            </div>
+        </div>
+        <br>
+
+        <div class="wsite-form-radio-container" id="student_type_filter_group">
+            <div class="paragraph">
+                <font color="#000"><strong>Student type</strong></font>
+            </div>
+        </div>
+
+    </div>
+    <div class="flex-container">
+        <iframe src="https://www.google.com/maps/d/u/2/embed?mid=19xQLDQ3UxqBTVQJB5lz82TNhWC0"></iframe>
+
+        <div id="list-container">
+            <div id="tabs">
+                <div class="tab selected" id="tab_all">All</div>
+                <div class="tab" id="tab_hospital">
+                    <div class="color-dot label-hospitals"></div>Hospital
+                </div>
+                <div class="tab" id="tab_non-profit">
+                    <div class="color-dot label-nonprofits"></div>Non-Profit
+                </div>
+                <div class="tab" id="tab_school">
+                    <div class="color-dot label-schools"></div>School
+                </div>
+                <div class="tab" id="tab_faith-based">
+                    <div class="color-dot label-faith-based"></div>Faith-Based
+                </div>
+                <div class="tab" id="tab_government">
+                    <div class="color-dot label-government"></div>Government
+                </div>
+                <div class="tab" id="tab_law">
+                    <div class="color-dot label-law"></div>Law
+                </div>
+            </div>
+
+            <a class="to-top wsite-button wsite-button-small wsite-button-normal" href="#top"
+                class="wsite-button-inner">
+                <span class="wsite-button-inner">To Top</span>
+            </a>
+
+
+
+
+
+            <div id="list">
+                
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

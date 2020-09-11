@@ -1,0 +1,109 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Details</title>
+    <style>
+        .hamp-container {
+            display: flex;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        .hamp-container * {
+            width: 50%;
+            min-width: 280px;
+            box-sizing: border-box;
+        }
+        #hamp-info-area {
+            border: 3px solid blue;
+        }
+        #hamp-visuals-area {
+            border: 3px solid red;
+        }
+        #hamp-form-area {
+            border: 3px solid purple;
+        }
+    </style>
+    <script type="text/javascript">
+        window.onload = init;
+        function init() {
+            row = window.location.href.split("?data=")[1];
+            row = unescapeDoubleQuotes(row);
+            row = JSON.parse(row);
+            for (const property in row) {
+                row[property] = decodeURIComponent(row[property]);
+            }
+            console.log(row);
+            fill_info(getInfo(row));
+            fill_video(getVideo(row));
+            fill_form(getForm(row));
+        }
+        function getVideo(row) {
+            return row["Student%20Internship/Volunteer%20Video%20Link"]
+        }
+        function getInfo(row) {
+            return row["Brief%20Statement%20of%20Organization%27s%20Purpose"]
+        }
+        function getForm(row) {
+            return row["Student%20Internship/Volunteer%20Form%20Link\n(Interest%20Form)"];
+        }
+        function fill_info(inf) {
+            var info = document.getElementById("hamp-info-area");
+            var title = document.createElement("h1");
+            var description = document.createElement("p");
+            title.innerText = row["Site%20Name"];
+            description.innerText = inf;
+            info.appendChild(title);
+            info.appendChild(description);
+        }
+        function fill_video(video_url) {
+            var visuals = document.getElementById("hamp-visuals-area");
+            var video = document.createElement("iframe");
+            video.src = video_url;
+            if (!video.src.includes("preview")) {
+                video.src = video.src.replace("view", "preview");
+            }
+            aspect_ratio = 0.5625; // Height to width ratio
+            area_width = visuals.offsetWidth;
+            area_height = visuals.offsetHeight;
+            available_width = Math.min(area_width, area_height / aspect_ratio);
+            video.style.width = "" + available_width;
+            video.style.height = "" + available_width * aspect_ratio;
+            visuals.style.padding = ((area_height - available_width * aspect_ratio) / 2) + "px 0px 0px";
+            visuals.appendChild(video);
+        }
+        function fill_form(form_src) {
+            var form_area = document.getElementById("hamp-form-area");
+            var form = document.createElement("iframe");
+            form.width = "640";
+            form.height = "1288";
+            form.frameborder = "0";
+            form.marginheight = "0";
+            form.marginwidth = "0";
+            form.src = form_src;
+            form_area.appendChild(form);
+        }
+        function unescapeDoubleQuotes(str) {
+            parts = str.split("_esc34");
+            return parts.join("\"");
+        }
+        function replaceAll(str, find, replace) {
+            parts = str.split(find);
+            return parts.join(replace);
+        }
+    </script>
+</head>
+<body>
+    <div class="hamp-container">
+        <div id="hamp-info-area">
+
+        </div>
+        <div id="hamp-visuals-area">
+    
+        </div>
+    </div>
+    <div id="hamp-form-area">
+
+    </div>
+</body>
+</html>

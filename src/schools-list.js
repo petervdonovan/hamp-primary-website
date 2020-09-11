@@ -1,0 +1,1 @@
+export const SCHOOLS_LIST = ["CAMS", /*"Jordan",*/ "Lakewood", "McBride", "Poly"];
